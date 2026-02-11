@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+@theme {
+  /* กำหนดโทนสี Earth Tone เข้าไปในระบบของ Tailwind */
+  --color-background: hsl(40 20% 97%);
+  --color-foreground: hsl(25 10% 20%);
+  --color-primary: hsl(25 35% 45%);
+  --color-primary-foreground: hsl(40 20% 97%);
+  --color-secondary: hsl(140 25% 90%);
+  --color-secondary-foreground: hsl(140 30% 25%);
+  --color-muted: hsl(40 10% 92%);
+  --color-muted-foreground: hsl(25 5% 45%);
+  --color-border: hsl(25 10% 85%);
+  --color-input: hsl(25 10% 85%);
+
+  --radius-xl: 0.75rem;
+}
+
+/* ตั้งค่าพื้นฐานให้ Body */
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* แก้ปัญหาคลาส border-border โดยกำหนดให้ใช้สีจากตัวแปรที่เราสร้าง */
+@utility border-border {
+  border-color: var(--color-border);
+}
