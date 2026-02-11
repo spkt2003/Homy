@@ -10,23 +10,26 @@ export function Navbar() {
                     🏡 Homy.
                 </Link>
 
-                {/* เมนูหลัก */}
+                {/* เมนูหลัก (Desktop) */}
                 <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
                     <Link href="/services" className="hover:text-primary transition-colors">บริการของเรา</Link>
                     <Link href="/booking" className="hover:text-primary transition-colors">จองบริการ</Link>
                     <Link href="/about" className="hover:text-primary transition-colors">เกี่ยวกับเรา</Link>
                 </div>
 
-                {/* ปุ่ม Action - แก้ไขลิงก์ตรงนี้ครับ */}
+                {/* ปุ่ม Action ที่ปรับปรุงใหม่ */}
                 <div className="flex items-center gap-4">
+                    {/* ปุ่มเข้าสู่ระบบ (อยู่ทางซ้าย) */}
                     <Link href="/login">
                         <Button variant="ghost" className="text-muted-foreground hover:text-primary">
                             เข้าสู่ระบบ
                         </Button>
                     </Link>
+
+                    {/* ปุ่มสมัครสมาชิก (เปลี่ยนจาก เริ่มต้นใช้งาน) */}
                     <Link href="/register">
-                        <Button className="bg-primary hover:bg-primary/90 text-white shadow-sm">
-                            เริ่มต้นใช้งาน
+                        <Button className="bg-primary hover:bg-primary/90 text-white shadow-sm px-6">
+                            สมัครสมาชิก
                         </Button>
                     </Link>
                 </div>
