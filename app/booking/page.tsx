@@ -5,91 +5,117 @@ import { supabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useRouter } from "next/navigation"
+import { Check } from "lucide-react"
+
+const SERVICE_OPTIONS = [
+    { id: "cleaning", label: "ทำความสะอาดบ้าน", icon: "🧹" },
+    { id: "pet", label: "ดูแลสัตว์เลี้ยง", icon: "🐶" },
+    { id: "plant", label: "รดน้ำต้นไม้", icon: "🌿" },
+    { id: "laundry", label: "ซักรีด/รีดผ้า", icon: "🧺" },
+    { id: "security", label: "ตรวจเช็คความปลอดภัย", icon: "🛡️" },
+]
 
 export default function BookingPage() {
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState(false)
     const [userEmail, setUserEmail] = useState("")
+    const [selectedServices, setSelectedServices] = useState<string[]>([])
     const router = useRouter()
 
-    // ดึงอีเมลคนที่ล็อกอินอยู่มาเตรียมไว้
     useEffect(() => {
         const getUser = async () => {
             const { data: { user } } = await supabase.auth.getUser()
-            if (user) {
-                setUserEmail(user.email || "")
-            } else {
-                router.push("/login") // ถ้าไม่ได้ล็อกอินให้ดีดออก
-            }
+            if (user) setUserEmail(user.email || "")
+            else router.push("/login")
         }
         getUser()
     }, [router])
 
+    const toggleService = (serviceLabel: string) => {
+        setSelectedServices(prev =>
+            prev.includes(serviceLabel)
+                ? prev.filter(s => s !== serviceLabel)
+                : [...prev, serviceLabel]
+        )
+    }
+
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
-        setLoading(true)
+        if (selectedServices.length === 0) return alert("โปรดเลือกอย่างน้อย 1 บริการครับ")
 
+        setLoading(true)
         const formData = new FormData(e.currentTarget)
 
-        // ส่งข้อมูลไปที่ตาราง service_requests
+        // รวมรายการบริการที่เลือกเป็นข้อความเดียว (หรือส่งเป็น Array ถ้าตารางรองรับ)
         const { error } = await supabase.from("service_requests").insert([
             {
-                user_email: userEmail, // ใช้อีเมลจากระบบล็อกอิน
+                user_email: userEmail,
                 phone_number: formData.get("phone"),
-                service_type: formData.get("service"),
+                service_type: selectedServices.join(", "), // รวมบริการ
                 description: formData.get("details"),
             },
         ])
 
         setLoading(false)
-        if (error) {
-            alert("เกิดข้อผิดพลาด: " + error.message)
-        } else {
-            setSuccess(true)
-        }
+        if (error) alert("เกิดข้อผิดพลาด: " + error.message)
+        else setSuccess(true)
     }
 
     if (success) {
         return (
-            <div className="max-w-md mx-auto mt-20 text-center p-8 bg-white rounded-xl shadow-lg border">
-                <div className="text-5xl mb-4">✅</div>
-                <h2 className="text-2xl font-bold text-primary mb-4">จองบริการสำเร็จ!</h2>
-                <p className="text-muted-foreground mb-6">เราได้รับข้อมูลของคุณแล้ว และจะรีบตรวจสอบโดยเร็วที่สุด</p>
-                <Button onClick={() => router.push("/dashboard")} className="w-full">ไปที่รายการจองของฉัน</Button>
+            <div className="max-w-md mx-auto mt-20 text-center p-8 bg-white rounded-3xl shadow-2xl border">
+                <div className="text-6xl mb-4">✨</div>
+                <h2 className="text-2xl font-bold text-primary mb-2">บันทึกข้อมูลสำเร็จ!</h2>
+                <p className="text-muted-foreground mb-6">เราได้รับรายการบริการที่คุณเลือกแล้ว</p>
+                <Button onClick={() => router.push("/dashboard")} className="w-full rounded-full py-6">ดูสถานะการจอง</Button>
             </div>
         )
     }
 
     return (
         <div className="max-w-2xl mx-auto py-12 px-4">
-            <Card className="shadow-xl border-t-4 border-t-primary">
-                <CardHeader>
-                    <CardTitle className="text-2xl text-center text-primary font-bold">ยืนยันการจองบริการ</CardTitle>
+            <Card className="shadow-2xl border-none rounded-3xl overflow-hidden">
+                <CardHeader className="bg-primary p-8">
+                    <CardTitle className="text-2xl text-center text-white font-bold">เลือกบริการที่ต้องการ</CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                <CardContent className="p-8">
+                    <form onSubmit={handleSubmit} className="space-y-8">
+                        {/* ส่วนเลือกบริการแบบหลายรายการ */}
                         <div>
-                            <label className="block text-sm font-medium mb-2">อีเมลผู้ใช้งาน</label>
-                            <input value={userEmail} disabled className="w-full p-3 border rounded-md bg-slate-50 text-slate-500" />
+                            <label className="block text-sm font-bold mb-4 text-slate-700">รายการบริการ (เลือกได้หลายรายการ)</label>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {SERVICE_OPTIONS.map((service) => (
+                                    <div
+                                        key={service.id}
+                                        onClick={() => toggleService(service.label)}
+                                        className={`flex items-center justify-between p-4 rounded-2xl border-2 cursor-pointer transition-all ${selectedServices.includes(service.label)
+                                                ? "border-primary bg-primary/5 ring-1 ring-primary"
+                                                : "border-slate-100 hover:border-slate-200"
+                                            }`}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-2xl">{service.icon}</span>
+                                            <span className="font-medium text-slate-700">{service.label}</span>
+                                        </div>
+                                        {selectedServices.includes(service.label) && <Check className="w-5 h-5 text-primary" />}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium mb-2">เบอร์โทรศัพท์ติดต่อ</label>
-                            <input name="phone" type="tel" required className="w-full p-3 border rounded-md focus:ring-2 focus:ring-primary" placeholder="08x-xxx-xxxx" />
+
+                        <div className="space-y-4 pt-4 border-t">
+                            <div>
+                                <label className="block text-sm font-bold mb-2">เบอร์โทรศัพท์ติดต่อ</label>
+                                <input name="phone" type="tel" required className="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-primary" placeholder="08x-xxx-xxxx" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold mb-2">รายละเอียดและคำอธิบายเพิ่มเติม</label>
+                                <textarea name="details" required className="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-primary" rows={4} placeholder="ระบุวัน เวลาที่สะดวก หรือสิ่งที่ต้องการให้เน้นเป็นพิเศษ..."></textarea>
+                            </div>
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium mb-2">เลือกบริการที่ต้องการ</label>
-                            <select name="service" className="w-full p-3 border rounded-md">
-                                <option value="ทำความสะอาดบ้าน">🧹 ทำความสะอาดบ้าน</option>
-                                <option value="ดูแลสัตว์เลี้ยง">🐶 ดูแลสัตว์เลี้ยง</option>
-                                <option value="รดน้ำต้นไม้">🌿 รดน้ำต้นไม้</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium mb-2">ระบุที่อยู่และรายละเอียดเพิ่มเติม</label>
-                            <textarea name="details" required className="w-full p-3 border rounded-md" rows={4} placeholder="เช่น บ้านเลขที่ 123/4... ต้องการให้เน้นห้องรับแขก"></textarea>
-                        </div>
-                        <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={loading}>
-                            {loading ? "กำลังส่งข้อมูล..." : "ยืนยันการจอง"}
+
+                        <Button type="submit" className="w-full h-14 text-lg font-bold rounded-2xl shadow-lg" disabled={loading}>
+                            {loading ? "กำลังส่งข้อมูล..." : "ยืนยันการจองทั้งหมด"}
                         </Button>
                     </form>
                 </CardContent>
