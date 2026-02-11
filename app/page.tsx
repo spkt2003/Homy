@@ -7,15 +7,15 @@ export default function HomePage() {
   const router = useRouter();
 
   const handleProtectedAction = async (targetPath: string) => {
-    // เช็คว่ามี User ล็อกอินอยู่ไหม
+    // ดึงข้อมูล User ปัจจุบันจาก Supabase
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      // ถ้าไม่มี ให้แจ้งเตือนและส่งไปหน้า Login
-      alert("กรุณาเข้าสู่ระบบก่อนใช้งานส่วนนี้");
+      // ถ้าไม่มีผู้ใช้ล็อกอินอยู่ ให้เด้ง Alert และพาไปหน้า Login
+      alert("กรุณาเข้าสู่ระบบก่อนเข้าใช้งานส่วนนี้ครับ");
       router.push("/login");
     } else {
-      // ถ้ามี ให้พาไปหน้าที่ต้องการ
+      // ถ้าล็อกอินแล้ว ให้พาไปหน้าปลายทาง (Dashboard หรือ Booking)
       router.push(targetPath);
     }
   };
@@ -36,7 +36,7 @@ export default function HomePage() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            {/* ปุ่มจองบริการ: บังคับ Login */}
+            {/* ปุ่มจองบริการ: เช็ค Login ก่อนไป /booking */}
             <Button
               size="lg"
               onClick={() => handleProtectedAction("/booking")}
@@ -45,12 +45,12 @@ export default function HomePage() {
               จองบริการเลย
             </Button>
 
-            {/* ปุ่มดูการจอง: บังคับ Login ตามที่คุณต้องการ */}
+            {/* ปุ่มดูการจอง: เช็ค Login ก่อนไป /dashboard ตามที่ต้องการครับ */}
             <Button
               size="lg"
               variant="outline"
               onClick={() => handleProtectedAction("/dashboard")}
-              className="px-10 py-7 text-lg rounded-full border-2 hover:bg-primary/5 transition-all"
+              className="px-10 py-7 text-lg rounded-full border-2 hover:bg-primary/5 transition-all text-slate-700"
             >
               ดูการจองของฉัน
             </Button>
