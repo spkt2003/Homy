@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 export default function HomePage() {
   const router = useRouter();
 
-  // ฟังก์ชันเช็ค Login ก่อนพาไปหน้าอื่น
   const handleProtectedAction = async (targetPath: string) => {
+    // เช็ค User ล่าสุดจาก session โดยตรงเพื่อให้แม่นยำ
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -20,7 +20,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* 1. Hero Section (ส่วนบนสุด) */}
+      {/* 1. Hero Section */}
       <section className="relative pt-20 pb-32 flex flex-col items-center text-center px-4">
         <div className="max-w-3xl space-y-6">
           <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-slate-900 leading-tight">
@@ -54,48 +54,35 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. Services Section (ส่วนที่คุณต้องการให้นำกลับมา) */}
+      {/* 2. Services Section (นำรายละเอียดบริการกลับมา) */}
       <section className="bg-slate-50 py-24 px-4">
         <div className="max-w-7xl mx-auto text-center space-y-12">
           <div className="space-y-4">
             <h2 className="text-3xl font-bold text-slate-900">บริการที่เราเชี่ยวชาญ</h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">
-              ครบวงจรเรื่องการดูแลบ้าน เพื่อความสบายใจของคุณเมื่อต้องเดินทางไกล
-            </p>
+            <p className="text-muted-foreground">ครบวงจรเรื่องการดูแลบ้าน เพื่อความสบายใจของคุณ</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* การ์ดบริการที่ 1: ทำความสะอาด */}
-            <div className="bg-white p-8 rounded-3xl shadow-sm border hover:shadow-md transition-all hover:-translate-y-1">
+          <div className="grid md:grid-cols-3 gap-8 text-center">
+            <div className="bg-white p-8 rounded-3xl shadow-sm border hover:shadow-md transition-all">
               <div className="bg-orange-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 mx-auto text-3xl">🧹</div>
               <h3 className="font-bold text-xl mb-3">ทำความสะอาดบ้าน</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                ปัดกวาดเช็ดถู ดูแลทุกซอกทุกมุมให้สะอาดเอี่ยมอ่อง พร้อมใช้งานเสมอ
-              </p>
+              <p className="text-sm text-muted-foreground leading-relaxed">ดูแลทุกซอกทุกมุมให้สะอาดเอี่ยมอ่อง พร้อมใช้งานเสมอ</p>
             </div>
 
-            {/* การ์ดบริการที่ 2: ดูแลสัตว์เลี้ยง */}
-            <div className="bg-white p-8 rounded-3xl shadow-sm border hover:shadow-md transition-all hover:-translate-y-1">
+            <div className="bg-white p-8 rounded-3xl shadow-sm border hover:shadow-md transition-all">
               <div className="bg-green-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 mx-auto text-3xl">🐶</div>
               <h3 className="font-bold text-xl mb-3">ดูแลสัตว์เลี้ยง</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                ให้อาหาร พาเดินเล่น และมอบความรักให้เพื่อนสี่ขาของคุณอย่างดีที่สุด
-              </p>
+              <p className="text-sm text-muted-foreground leading-relaxed">ให้อาหาร และมอบความรักให้เพื่อนสี่ขาของคุณอย่างดีที่สุด</p>
             </div>
 
-            {/* การ์ดบริการที่ 3: รดน้ำต้นไม้ */}
-            <div className="bg-white p-8 rounded-3xl shadow-sm border hover:shadow-md transition-all hover:-translate-y-1">
+            <div className="bg-white p-8 rounded-3xl shadow-sm border hover:shadow-md transition-all">
               <div className="bg-blue-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 mx-auto text-3xl">🌿</div>
               <h3 className="font-bold text-xl mb-3">รดน้ำต้นไม้</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                ดูแลสวนสวยของคุณให้เขียวขจี เติมความสดชื่นแม้ในวันที่คุณไม่อยู่
-              </p>
+              <p className="text-sm text-muted-foreground leading-relaxed">ดูแลสวนสวยของคุณให้เขียวขจี แม้ในวันที่คุณไม่อยู่</p>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Footer หรือส่วนอื่นๆ สามารถเพิ่มต่อตรงนี้ได้ครับ */}
     </div>
   );
 }
